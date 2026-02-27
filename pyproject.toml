@@ -1,0 +1,58 @@
+[project]
+name = "tg-task-tracker"
+version = "0.1.0"
+description = "Backend для SPA трекера привычек с интеграцией с Telegram"
+authors = [
+    { name = "LRK", email = "kirillvalentinka@gmail.com" },
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "Django>=5.0",
+    "djangorestframework>=3.15.0",
+    "djangorestframework-simplejwt>=5.3.0",
+    "django-cors-headers>=4.3.0",
+    "django-environ>=0.11.0",
+    "celery>=5.4.0",
+    "redis>=5.0.0",
+    "requests>=2.31.0",
+    "drf-spectacular>=0.27.0",
+    "psycopg[binary]>=3.2.0",
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+pytest-django = "^4.8.0"
+coverage = "^7.5.0"
+flake8 = "^7.0.0"
+black = "^24.0.0"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
+
+[tool.coverage.run]
+source = ["config", "users", "habits", "telegram_bot"]
+branch = true
+omit = [
+    "*/migrations/*",
+    "*/tests/*",
+    "manage.py",
+]
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+
+[tool.flake8]
+max-line-length = 88
+exclude = ["*/migrations/*", ".venv", ".git", "__pycache__"]
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+
