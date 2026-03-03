@@ -14,7 +14,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("id", "username", "email", "password", "telegram_chat_id")
+        fields = ("id", "email", "password", "telegram_chat_id")
 
     def validate_password(self, value: str) -> str:
         validate_password(value)
@@ -33,5 +33,5 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("id", "username", "email", "telegram_chat_id")
+        fields = ("id", "email", "telegram_chat_id")
 

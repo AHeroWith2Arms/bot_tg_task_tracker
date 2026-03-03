@@ -21,7 +21,7 @@ class PublicHabitViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """Список публичных привычек (read-only)."""
 
     serializer_class = HabitSerializer
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
         return Habit.objects.filter(is_public=True)

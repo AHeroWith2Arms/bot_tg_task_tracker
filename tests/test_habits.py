@@ -16,7 +16,10 @@ User = get_user_model()
 
 @pytest.mark.django_db
 def test_habit_model_validators() -> None:
-    user = User.objects.create_user(username="u1", password="Password123!")
+    user = User.objects.create_user(
+        email="u1@example.com",
+        password="Password123!",
+    )
     pleasant = Habit.objects.create(
         user=user,
         place="дом",
@@ -45,8 +48,14 @@ def test_habit_model_validators() -> None:
 
 @pytest.mark.django_db
 def test_habit_crud_and_permissions() -> None:
-    user = User.objects.create_user(username="owner", password="Password123!")
-    other = User.objects.create_user(username="other", password="Password123!")
+    user = User.objects.create_user(
+        email="owner@example.com",
+        password="Password123!",
+    )
+    other = User.objects.create_user(
+        email="other@example.com",
+        password="Password123!",
+    )
     client = APIClient()
     client.force_authenticate(user=user)
 
@@ -75,8 +84,11 @@ def test_habit_crud_and_permissions() -> None:
 
 
 @pytest.mark.django_db
-def test_public_habits_list_accessible_for_anonymous() -> None:
-    user = User.objects.create_user(username="owner2", password="Password123!")
+def test_public_habits_list_requires_authentication() -> None:
+    user = User.objects.create_user(
+        email="owner2@example.com",
+        password="Password123!",
+    )
     Habit.objects.create(
         user=user,
         place="дом",
@@ -89,7 +101,14 @@ def test_public_habits_list_accessible_for_anonymous() -> None:
 
     client = APIClient()
     url = reverse("public-habits-list")
-    response = client.get(url)
-    assert response.status_code == 200
-    assert response.data["count"] == 1
+
+    # анонимному пользователю доступ запрещён
+    anon_response = client.get(url)
+    assert anon_response.status_code == 401
+
+    # авторизованному пользователю список доступен
+    client.force_authenticate(user=user)
+    auth_response = client.get(url)
+    assert auth_response.status_code == 200
+    assert auth_response.data["count"] == 1
 

@@ -14,18 +14,17 @@ def test_user_registration_and_jwt_login() -> None:
     client = APIClient()
     register_url = reverse("register")
     data = {
-        "username": "testuser",
         "email": "test@example.com",
         "password": "StrongPass123!",
     }
     response = client.post(register_url, data, format="json")
     assert response.status_code == 201
-    assert User.objects.filter(username="testuser").exists()
+    assert User.objects.filter(email="test@example.com").exists()
 
     token_url = reverse("jwt-create")
     token_response = client.post(
         token_url,
-        {"username": "testuser", "password": "StrongPass123!"},
+        {"email": "test@example.com", "password": "StrongPass123!"},
         format="json",
     )
     assert token_response.status_code == 200
@@ -34,12 +33,15 @@ def test_user_registration_and_jwt_login() -> None:
 
 @pytest.mark.django_db
 def test_me_endpoint_returns_current_user() -> None:
-    user = User.objects.create_user(username="meuser", password="Password123!")
+    user = User.objects.create_user(
+        email="meuser@example.com",
+        password="Password123!",
+    )
     client = APIClient()
     client.force_authenticate(user=user)
 
     url = reverse("me")
     response = client.get(url)
     assert response.status_code == 200
-    assert response.data["username"] == "meuser"
+    assert response.data["email"] == "meuser@example.com"
 
